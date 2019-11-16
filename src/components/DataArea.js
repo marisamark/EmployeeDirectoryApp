@@ -30,7 +30,8 @@ export default function DataArea() {
         headings: stuff.headings,
         filteredUsers: results.data.results,
       });
-    }, []);
+    })
+   }, []);
 
     // useEffect(()=>{
     //   console.log("Order changed!")
@@ -38,14 +39,14 @@ export default function DataArea() {
     // }, [stuff.order]);
 
     const handleSort = heading => {
-      console.log(heading, stuff.order)
+      // console.log(heading, stuff.order)
       if (stuff.order === "descend") {
-        setStuff(stuff => ({
+        setStuff({
           order: "ascend",
           users: stuff.users,
           filteredUsers: stuff.filteredUsers,
           headings: stuff.headings
-        }))
+        })
       } else {
         setStuff({
           order: "descend",
@@ -87,14 +88,13 @@ export default function DataArea() {
       }
       const sortedUsers = stuff.filteredUsers.sort(compareFnc);
 
-      console.log(sortedUsers)
+      // console.log(sortedUsers)
       setStuff({
         filteredUsers: sortedUsers,
         order: stuff.order,
         users: stuff.order,
         headings: stuff.headings
       });
-
     }
 
     const handleSearchChange = event => {
@@ -107,47 +107,55 @@ export default function DataArea() {
           .toLowerCase();
         return values.indexOf(filter.toLowerCase()) !== -1;
       });
-      setStuff({ ...stuff, filteredUsers: filteredList });
+      setStuff({
+        filteredUsers: filteredList,
+        headings: stuff.headings,
+        users: stuff.users,
+        order: stuff.order
+      });
     }
 
 
 
 
-
-    useEffect(() => {
-      console.log("API Fired")
-      const getAPI = async () => {
-        try {
-          const results = await API.getUsers();
-          setStuff({
-            ...stuff,
-            order: "ascend",
-            users: results.data.results,
-            filteredUsers: results.data.results
-          })
-        } catch (err) {
-          console.log(err.message)
-        }
-      }
-      getAPI();
-
-    }, [])
-
-
-
     return (
-      <APIContext.Provider value={{ stuff }}>
-        <Nav />
+      <APIContext.Provider value={ stuff }>
+        <Nav 
+        handleSearchChange={handleSearchChange}
+         />
         <div className="data-area">
           <DataTable
-          //handleSearchChange, handleSort, filteredUsers, headings 
+          handleSort={handleSort}
           />
         </div>
       </APIContext.Provider>
     );
   }
-  )
-}
+  
+
+
+    // useEffect(() => {
+    //   console.log("API Fired")
+    //   const getAPI = async () => {
+    //     try {
+    //       const results = await API.getUsers();
+    //       setStuff({
+    //         ...stuff,
+    //         order: "ascend",
+    //         users: results.data.results,
+    //         filteredUsers: results.data.results
+    //       })
+    //     } catch (err) {
+    //       console.log(err.message)
+    //     }
+    //   }
+    //   getAPI();
+
+    // }, [])
+
+
+
+
 
   // return (
   //   <>

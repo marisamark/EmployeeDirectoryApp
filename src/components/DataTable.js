@@ -1,8 +1,13 @@
-import React from "react";
+import React, {useContext} from "react";
 import DataBody from "./DataBody";
 import "../styles/DataTable.css";
+import APIContext from "../utils/APIContext";
 
-function DataTable({ headings, users, handleSort }) {
+
+
+function DataTable({ handleSort }) {
+const{ headings } = useContext(APIContext)
+
   return (
     <div className="datatable mt-5">
       <table
@@ -29,7 +34,7 @@ function DataTable({ headings, users, handleSort }) {
           </tr>
         </thead>
 
-        <DataBody users={users} />
+        <DataBody />
       </table>
     </div>
   );

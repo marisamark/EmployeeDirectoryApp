@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useContext} from "react";
 import "../styles/DataBody.css";
+import APIContext from "../utils/APIContext";
 
-function DataBody({ users }) {
+function DataBody() {
   function formatDate(date) {
     const dateArray = date.split("-");
     const year = dateArray[0];
@@ -12,10 +13,12 @@ function DataBody({ users }) {
     return formattedDate;
   }
 
+  const { filteredUsers } = useContext(APIContext)
+
   return (
     <tbody>
-      {users[0] !== undefined && users[0].name !== undefined ? (
-        users.map(({ login, name, picture, phone, email, dob }) => {
+      {filteredUsers[0] !== undefined && filteredUsers[0].name !== undefined ? (
+        filteredUsers.map(({ login, name, picture, phone, email, dob }) => {
           return (
             <tr key={login.uuid}>
               <td data-th="Image" className="align-middle">

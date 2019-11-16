@@ -2,7 +2,7 @@ import React from "react";
 import SearchBox from "./SearchBox.js";
 import "../styles/Nav.css";
 
-const Nav = ({ handleSearchChange })=> {
+const Nav = ({ handleSearchChange }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <button
@@ -27,7 +27,9 @@ const Nav = ({ handleSearchChange })=> {
           <input type="date" className="form-control" />
         </div>
         <div className="search-area col-4">
-          <SearchBox handleSearchChange={handleSearchChange} />
+          <SearchBox
+            handleSearchChange={handleSearchChange}
+          />
         </div>
       </div>
     </nav>
