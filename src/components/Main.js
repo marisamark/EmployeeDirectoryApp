@@ -5,13 +5,7 @@ import "../styles/Main.css";
 
 
 
-const Main = () => {
-  return (
-    <>
-    <DataArea />
-  </>
-  )
-}
+const Main = () => <DataArea />
 
 export default Main;
 

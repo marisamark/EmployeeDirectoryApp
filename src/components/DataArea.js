@@ -10,6 +10,7 @@ export default function DataArea() {
   const [stuff, setStuff] = useState({
     users: [{}],
     order: "descend",
+    heading: "Name",
     filteredUsers: [{}],
     headings: [
       { name: "Image", width: "10%" },
@@ -23,115 +24,106 @@ export default function DataArea() {
 
 
   useEffect(() => {
+    console.log("LoadUsers")
     API.getUsers().then(results => {
-      setStuff({
-        users: results.data.results,
+      setStuff(stuff => ({
+        ...stuff,
         order: stuff.order,
-        headings: stuff.headings,
         filteredUsers: results.data.results,
-      });
+      }));
     })
-   }, []);
+  }, []);
 
-    // useEffect(()=>{
-    //   console.log("Order changed!")
+  useEffect(() => {
+    console.log("Order changed!", stuff.heading, stuff.filteredUsers)
 
-    // }, [stuff.order]);
-
-    const handleSort = heading => {
-      // console.log(heading, stuff.order)
-      if (stuff.order === "descend") {
-        setStuff({
-          order: "ascend",
-          users: stuff.users,
-          filteredUsers: stuff.filteredUsers,
-          headings: stuff.headings
-        })
-      } else {
-        setStuff({
-          order: "descend",
-          users: stuff.users,
-          filteredUsers: stuff.filteredUsers,
-          headings: stuff.headings
-        })
-      }
-
-      const compareFnc = (a, b) => {
-        if (stuff.order === "ascend") {
-          // account for missing values
-          if (a[heading] === undefined) {
-            return 1;
-          } else if (b[heading] === undefined) {
-            return -1;
-          }
-          // numerically
-          else if (heading === "name") {
-            return a[heading].first.localeCompare(b[heading].first);
-          } else {
-            return a[heading] - b[heading];
-          }
-        } else {
-          // account for missing values
-          if (a[heading] === undefined) {
-            return 1;
-          } else if (b[heading] === undefined) {
-            return -1;
-          }
-          // numerically
-          else if (heading === "name") {
-            return b[heading].first.localeCompare(a[heading].first);
-          } else {
-            return b[heading] - a[heading];
-          }
+    const compareFnc = (a, b) => {
+      const isHigher = () => {
+        if (a[stuff.heading] && !b[stuff.heading]) return true
+        if (!a[stuff.heading] && b[stuff.heading]) return false
+        if (stuff.heading === "name") {
+          return a.name.first > b.name.first
         }
-
+        else if (stuff.heading === "email") {
+          return a.email > b.email
+        }
+        else if (stuff.heading === "phone") {
+          return a.phone > b.phone
+        }
+        else if (stuff.heading === "dob") {
+          return new Date(a.dob.date) > new Date(b.dob.date)
+        }
       }
-      const sortedUsers = stuff.filteredUsers.sort(compareFnc);
 
-      // console.log(sortedUsers)
-      setStuff({
-        filteredUsers: sortedUsers,
-        order: stuff.order,
-        users: stuff.order,
-        headings: stuff.headings
-      });
+      if (stuff.order === "ascend") {
+        return isHigher() ? 1 : -1
+      } else {
+        return !isHigher() ? 1 : -1
+      }
     }
 
-    const handleSearchChange = event => {
-      console.log(event.target.value);
-      const filter = event.target.value;
-      const filteredList = stuff.users.filter(item => {
-        // merge data together, then see if user input is anywhere inside
-        let values = Object.values(item)
-          .join("")
-          .toLowerCase();
-        return values.indexOf(filter.toLowerCase()) !== -1;
-      });
+    const sortedUsers = stuff.filteredUsers.sort(compareFnc);
+
+    // console.log(sortedUsers)
+    setStuff(stuff => ({
+      ...stuff,
+      filteredUsers: sortedUsers,
+    }));
+  }, [stuff.order, stuff.heading, stuff.filteredUsers]);
+
+  const handleSort = heading => {
+    // console.log(heading, stuff.order)
+    if (stuff.order === "descend") {
       setStuff({
-        filteredUsers: filteredList,
-        headings: stuff.headings,
-        users: stuff.users,
-        order: stuff.order
-      });
+        ...stuff,
+        heading,
+        order: "ascend",
+      })
+    } else {
+      setStuff({
+        ...stuff,
+        heading,
+        order: "descend",
+      })
     }
 
-
-
-
-    return (
-      <APIContext.Provider value={ stuff }>
-        <Nav 
-        handleSearchChange={handleSearchChange}
-         />
-        <div className="data-area">
-          <DataTable
-          handleSort={handleSort}
-          />
-        </div>
-      </APIContext.Provider>
-    );
   }
-  
+
+  const handleSearchChange = event => {
+    console.log(event.target.value);
+    const filter = event.target.value;
+    const filteredList = stuff.users.filter(item => {
+      // merge data together, then see if user input is anywhere inside
+      let values = Object.values(item)
+        .join("")
+        .toLowerCase();
+      return values.indexOf(filter.toLowerCase()) !== -1;
+    });
+    setStuff({
+      filteredUsers: filteredList,
+      headings: stuff.headings,
+      users: stuff.users,
+      order: stuff.order
+    });
+  }
+
+
+
+
+  return (
+    <APIContext.Provider value={stuff}>
+      <Nav
+        handleSearchChange={handleSearchChange}
+      />
+      <div className="data-area">
+        <DataTable
+          handleSort={handleSort}
+        />
+      </div>
+    </APIContext.Provider>
+  );
+}
+
 
 
     // useEffect(() => {
